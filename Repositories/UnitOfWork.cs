@@ -12,24 +12,32 @@ namespace Repositories
         private readonly IManufacturerRepository manufacturerRepository; 
         private readonly ISupplierRepository supplierRepository;
         private readonly ICustomerRepository customerRepository;
+        private readonly IRentingTransactionRepository rentingTransactionRepository;
+        private readonly IRentingDetailRepository rentingDetailRepository;
 
         public ICarRepository Cars => carRepository;
         public IManufacturerRepository Manufacturers => manufacturerRepository;
         public ISupplierRepository Suppliers => supplierRepository;
         public ICustomerRepository Customers => customerRepository;
+        public IRentingTransactionRepository RentingTransactions => rentingTransactionRepository;
+        public IRentingDetailRepository RentingDetails => rentingDetailRepository;
 
         public UnitOfWork(
             FUCarRentingManagementContext context,
             ICarRepository carRepository,
             IManufacturerRepository manufacturerRepository,
             ISupplierRepository supplierRepository,
-            ICustomerRepository customerRepository)
+            ICustomerRepository customerRepository,
+            IRentingTransactionRepository rentingTransactionRepository,
+            IRentingDetailRepository rentingDetailRepository)
         {
             this.context = context;
             this.carRepository = carRepository;
             this.manufacturerRepository = manufacturerRepository;
             this.supplierRepository = supplierRepository;
             this.customerRepository = customerRepository;
+            this.rentingTransactionRepository = rentingTransactionRepository;
+            this.rentingDetailRepository = rentingDetailRepository;
         }
         public int Complete()
         {

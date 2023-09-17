@@ -13,13 +13,21 @@ namespace Repositories
         {
             if(connectionString != null)
                 services.AddDbContext<FUCarRentingManagementContext>(opts => opts.UseSqlServer(connectionString));
+
             services.AddScoped<ICarRepository, CarRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
             services.AddScoped<ISupplierRepository, SupplierRepository>();
+            services.AddScoped<IRentingDetailRepository, RentingDetailRepository>();
+            services.AddScoped<IRentingTransactionRepository, RentingTransactionRepository>();
+            
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            
             services.AddScoped<ICarService, CarService>();
             services.AddScoped<IAuthenticationSerivce, AuthenticationService>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IRentingService, RentingService>();
+
             return services;
         }
     }

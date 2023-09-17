@@ -19,13 +19,27 @@ namespace FUCarRentingSystem.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync(AuthenticateRequest request)
         {
-            return Ok(await authenticationSerivce.LoginAsync(request));
+            var result = await authenticationSerivce.LoginAsync(request);
+            SetHeaders(result);
+            return Ok(result);
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(AuthenticateRequest request)
         {
-            return Ok(await authenticationSerivce.RegisterAsync(request));
+            var result = await authenticationSerivce.RegisterAsync(request);
+            SetHeaders(result);
+            return Ok(result);
+        }
+
+        private void SetHeaders(AuthenticateResponse response)
+        {
+            HttpContext.Response.Cookies
+                .Append("Authentication", response.CustomerId.ToString(), new CookieOptions()
+                {
+                    HttpOnly = true,
+                    Secure = true
+                });
         }
     }
 }
