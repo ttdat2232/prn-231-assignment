@@ -71,7 +71,7 @@ namespace Repositories.Base
                     paginationResult.Values = await orderBy(query).Skip(pageIndex * pageSize).Take(pageSize).ToListAsync();
             }
             paginationResult.PageIndex = pageIndex;
-            paginationResult.PageSize = paginationResult.Values.Count;
+            paginationResult.PageSize = pageSize;
             return paginationResult;
         }
 

@@ -27,7 +27,7 @@ namespace FUCarRentingSystem.Controllers
                 return Ok(await customerService.GetCustomerByIdAsync(id));
             }
             else
-                throw new ForbidenException("Not allowed");
+                throw new ForbidenException();
         }
 
         [HttpPut("{id}")]
@@ -39,7 +39,7 @@ namespace FUCarRentingSystem.Controllers
                 return Ok(await customerService.UpdateCustomerProfileAsync(id, dto));
             }
             else
-                throw new ForbidenException("Not allowed");
+                throw new ForbidenException();
         }
 
         [HttpDelete("{id}")]
@@ -57,7 +57,7 @@ namespace FUCarRentingSystem.Controllers
                 return Ok();
             }
             else
-                throw new ForbidenException("Not allowed");
+                throw new ForbidenException();
         }
     }
 }

@@ -32,7 +32,7 @@ namespace FUCarRentingSystem.Controllers
                 return StatusCode((int)HttpStatusCode.Created);
             }
             else
-                throw new ForbidenException("Not allowed");
+                throw new ForbidenException();
         }
 
         [HttpGet]
@@ -44,7 +44,7 @@ namespace FUCarRentingSystem.Controllers
                 RentingTransactionDto result = await rentingService.GetTransactionByUserIdAndTractionId(userId, transactionId);
                 return Ok(result);
             }
-                throw new ForbidenException("Not allowed");
+                throw new ForbidenException();
         }
     }
 }

@@ -27,6 +27,8 @@ namespace Repositories
             services.AddScoped<IAuthenticationSerivce, AuthenticationService>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IRentingService, RentingService>();
+            services.AddScoped<IManufacturerService, ManufacturerService>();
+            services.AddScoped<ISupplierService, SupplierService>();
 
             return services;
         }

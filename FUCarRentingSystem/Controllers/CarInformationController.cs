@@ -4,6 +4,8 @@ using Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using FUCarRentingSystem.Utilities;
+using Application.Exceptions;
 
 namespace FUCarRentingSystem.Controllers
 {
@@ -33,6 +35,9 @@ namespace FUCarRentingSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCarInformationAsync(CreateCarInformationDto dto)
         {
+            HttpContext.HeaderAuthenticate(out int userId);
+            if (userId != -1)
+                throw new ForbidenException();
             var result = await carService.AddCarInformationAsync(dto);
             var location = $"{HttpContext.Request.Path.Value}/{result.CarId}";
             HttpContext.Response.Headers.Add("location", location);
@@ -42,6 +47,9 @@ namespace FUCarRentingSystem.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCarInformationAsync(int id, UpdateCarInformationDto dto)
         {
+            HttpContext.HeaderAuthenticate(out int userId);
+            if (userId != -1)
+                throw new ForbidenException();
             dto.CarId = id;
             await carService.UpdateCarInformation(dto);
             return Ok();
@@ -50,6 +58,9 @@ namespace FUCarRentingSystem.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCarInformationAsync(int id)
         {
+            HttpContext.HeaderAuthenticate(out int userId);
+            if (userId != -1)
+                throw new ForbidenException();
             await carService.DeleteCarInformation(id); 
             return Ok();
         }
