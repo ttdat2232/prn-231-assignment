@@ -28,8 +28,8 @@ namespace FUCarRentingSystem.Controllers
             {
                 RentingTransactionDto result = await rentingService.CreateRentingTransactionAsync(userId, dtos);
                 var location = Request.Path.Value + $"?userId={userId}&transactionId={result.RentingTransationId}";
-                Response.Headers.Append("location", location);
-                return StatusCode((int)HttpStatusCode.Created);
+                HttpContext.Response.Headers.Append("location", location);
+                return Ok(new { location = location});
             }
             else
                 throw new ForbidenException();

@@ -34,12 +34,14 @@ namespace FUCarRentingSystem.Controllers
 
         private void SetHeaders(AuthenticateResponse response)
         {
-            HttpContext.Response.Cookies
-                .Append("Authentication", response.CustomerId.ToString(), new CookieOptions()
-                {
-                    HttpOnly = true,
-                    Secure = true
-                });
+            HttpContext.Response.Headers
+                .Append("Authorization", response.CustomerId.ToString()
+                //, new CookieOptions()
+                //{
+                //    HttpOnly = true,
+                //    Secure = true
+                //}
+                );
         }
     }
 }

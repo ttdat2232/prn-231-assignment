@@ -7,9 +7,12 @@ namespace FUCarRentingSystem.Utilities
     {
         public static void HeaderAuthenticate(this HttpContext context, out int userId)
         {
-            if (context.Request.Cookies.TryGetValue("Authentication", out var value) is false)
+            if (context.Request.Headers.TryGetValue("Authorization", out var value) is false)
                 throw new UnauthorizeExpcetion("User is not login");
-            userId = value != null? int.Parse(value) : -1;
+            userId = int.Parse(value);
+            //if (context.Request.Cookies.TryGetValue("Authentication", out var value) is false)
+            //    throw new UnauthorizeExpcetion("User is not login");
+            //userId = value != null ? int.Parse(value) : -1;
         }
     }
 }
