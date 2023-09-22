@@ -46,5 +46,17 @@ namespace FUCarRentingSystem.Controllers
             }
                 throw new ForbidenException();
         }
+
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetTransactionsOfCurrentUser(int userId)
+        {
+            HttpContext.HeaderAuthenticate(out int currentUserId);
+            if(currentUserId == userId || currentUserId == -1)
+            {
+                return Ok(await rentingService.GetTransactionsOfUser(userId));
+            }
+            else
+                throw new ForbidenException();
+        }
     }
 }
