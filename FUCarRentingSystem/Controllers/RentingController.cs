@@ -58,5 +58,17 @@ namespace FUCarRentingSystem.Controllers
             else
                 throw new ForbidenException();
         }
+
+        [HttpGet("statistic")]
+        public async Task<IActionResult> GetStatistic([FromQuery] DateTime start, [FromQuery] DateTime end)
+        {
+            HttpContext.HeaderAuthenticate(out int userId);
+            if(userId == -1)
+            {
+                List<StatictisResult> result = await rentingService.GetStatictisResult(start, end);
+                return Ok(result);
+            }
+            throw new UnauthorizeExpcetion("Not allowed");
+        }
     }
 }

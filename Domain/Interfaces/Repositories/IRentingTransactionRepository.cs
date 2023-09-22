@@ -5,5 +5,6 @@ namespace Domain.Interfaces.Repositories
 {
     public interface IRentingTransactionRepository : IRepository<RentingTransaction>
     {
+        Task<RentingTransaction> GetByIdAsync(int userId, int transactionId);
     }
 }

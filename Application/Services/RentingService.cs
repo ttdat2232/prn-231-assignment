@@ -45,7 +45,7 @@ namespace Application.Services
                     throw new ConflictExpcetion($"'From' of car with Id {rentingDetailDto.CarId} date must be later than at the current");
                 if (from > to)
                     throw new ConflictExpcetion("'From' date must be earlier than 'To' date");
-                var existedCar = await unitOfWork.Cars.GetAsync(expression: c => c.CarId == rentingDetailDto.CarId)
+                var existedCar = await unitOfWork.Cars.GetAsync(expression: c => c.CarId == rentingDetailDto.CarId && c.CarStatus == 1)
                     .ContinueWith(t => t.Result.Values.Any() ? t.Result.Values.First() : throw new NotFoundException<CarInformation>(rentingDetailDto.CarId, GetType()));
                 await unitOfWork.RentingDetails.GetAsync(
                     expression: RentingDetailExpression.GetRentingDetailFromToOfCar(from, to, existedCar.CarId),
@@ -53,10 +53,11 @@ namespace Application.Services
                     .ContinueWith(t =>
                     {
                         if (t.Result.Values.Any())
-                            throw new ConflictExpcetion($"Car {rentingDetailDto.CarId} was rented");
+                            throw new ConflictExpcetion($"{existedCar.CarName} was rented");
                     });
-                TimeSpan timeSpan = to - from;
-                var price = (decimal)timeSpan.TotalDays * existedCar.CarRentingPricePerDay ?? 0;
+                TimeSpan timeSpan = new DateTime(to.Year, to.Month, to.Day) - new DateTime(from.Year, from.Month, from.Day);
+                var totalDays = timeSpan.TotalDays == 0 ? 1 : timeSpan.TotalDays;
+                var price = (decimal)totalDays * existedCar.CarRentingPricePerDay ?? 0;
                 totalPrice += price;
                 rentingTransaction.RentingDetails.Add(new RentingDetail
                 {
@@ -75,14 +76,48 @@ namespace Application.Services
             };
         }
 
+        public async Task<List<StatictisResult>> GetStatictisResult(DateTime start, DateTime end)
+        {
+            if (start > end)
+                throw new ConflictExpcetion("start date cannot later than end date");
+            var result = await unitOfWork.RentingTransactions.GetAsync(
+                expression: r => r.RentingDate >= start && r.RentingDate < end, 
+                takeAll: true,
+                orderBy: q => q.OrderByDescending(r => r.RentingDate))
+                .ContinueWith(t => t.Result.Values);
+            var existed = new Dictionary<int, StatictisResult>();
+            foreach(var item in result)
+            {
+                if(item.RentingDate.HasValue)
+                {
+                    if(existed.TryGetValue(item.RentingDate.Value.Year, out var value))
+                    {
+                        if (value.MonthIncomes.TryGetValue(item.RentingDate.Value.Month, out var income))
+                        {
+                            value.MonthIncomes[item.RentingDate.Value.Month] = income + item.TotalPrice ?? 0;
+                        }
+                        existed[item.RentingDate.Value.Year] = value;
+                    }
+                    else
+                    {
+                        var newValues = new StatictisResult { Year = item.RentingDate.Value.Year };
+                        newValues.MonthIncomes[item.RentingDate.Value.Month] = item.TotalPrice ?? 0;
+                        existed.Add(item.RentingDate.Value.Year, newValues);
+                    }
+                }
+            }
+            return existed.Values.ToList();
+        }
+
         public async Task<RentingTransactionDto> GetTransactionByUserIdAndTractionId(int userId, int transactionId)
         {
-            var result = await unitOfWork.RentingTransactions.GetAsync(
-                expression: r => r.CustomerId == userId && r.RentingTransationId == transactionId,
-                pageSize: 1,
-                includeProperties: new string[] {nameof(RentingTransaction.RentingDetails)})
-                .ContinueWith(t => t.Result.Values.Any() ? t.Result.Values[0] : throw new NotFoundException<RentingTransaction>(new { userId, transactionId}, GetType()));
-            return RentingTransactionMapper.ToDto(result);
+            return RentingTransactionMapper.ToDto(await unitOfWork.RentingTransactions.GetByIdAsync(userId, transactionId));
+        }
+
+        public async Task<List<RentingTransactionDto>> GetTransactionsOfUser(int userId)
+        {
+            return await unitOfWork.RentingTransactions.GetAsync(expression: r => r.CustomerId == userId, takeAll: true)
+                .ContinueWith(t => t.Result.Values.Select(r => RentingTransactionMapper.ToDto(r)).ToList());
         }
     }
 }

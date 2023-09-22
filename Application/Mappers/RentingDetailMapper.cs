@@ -7,7 +7,7 @@ namespace Application.Mappers
     {
         public static RentingDetailDto ToDto(RentingDetail entity)
         {
-            return new RentingDetailDto
+            var result = new RentingDetailDto
             {
                 CarId = entity.CarId,
                 EndDate = entity.EndDate,
@@ -15,6 +15,9 @@ namespace Application.Mappers
                 RentingTransactionId = entity.RentingTransactionId,
                 StartDate = entity.StartDate,
             };
+            if (entity.Car != null)
+                result.CarName = entity.Car.CarName;
+            return result;
         }
     }
 }
